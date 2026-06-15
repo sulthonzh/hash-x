@@ -1,0 +1,25 @@
+{
+  "name": "hash-x",
+  "version": "1.0.0",
+  "description": "Zero-dependency non-cryptographic hash functions: MurmurHash3, XXHash32, FNV-1a, CRC32, Adler32, DJB2, JavaHash",
+  "main": "index.js",
+  "bin": {
+    "hash-x": "cli.js"
+  },
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "keywords": [
+    "hash",
+    "murmurhash",
+    "xxhash",
+    "fnv",
+    "crc32",
+    "adler32",
+    "djb2",
+    "non-cryptographic",
+    "checksum"
+  ],
+  "license": "MIT",
+  "author": "sulthonzh"
+}
