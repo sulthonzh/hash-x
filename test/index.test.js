@@ -1,13 +1,11 @@
-'use strict';
-
-const { test } = require('node:test');
-const assert = require('node:assert');
-const {
+import { test } from 'node:test';
+import assert from 'node:assert';
+import {
   crc32, adler32, djb2, javaHash,
   fnv1a_32, fnv1a_64,
   murmurhash3_32, xxhash32,
   toHex, combine, hash, listAlgorithms,
-} = require('../index');
+} from '../index.js';
 
 // ─── CRC32 ───────────────────────────────────────────────────────
 

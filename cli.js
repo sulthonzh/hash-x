@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 'use strict';
 
-const { readFileSync } = require('fs');
-const {
+import { readFileSync } from 'fs';
+import {
   crc32, adler32, djb2, javaHash,
   fnv1a_32, fnv1a_64,
   murmurhash3_32, xxhash32,
   toHex, hash, listAlgorithms,
-} = require('./index');
+} from './index.js';
 
 const args = process.argv.slice(2);
 
@@ -93,13 +93,9 @@ if (filePath) {
 } else {
   // Read from stdin
   const chunks = [];
-  try {
-    while (true) {
-      const chunk = require('fs').readFileSync(0, 'utf8');
-      chunks.push(chunk);
-    }
-  } catch {
-    // EOF
+  process.stdin.setEncoding('utf8');
+  for await (const chunk of process.stdin) {
+    chunks.push(chunk);
   }
   data = chunks.join('');
 }

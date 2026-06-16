@@ -323,7 +323,7 @@ function listAlgorithms() {
   return Object.keys(algorithms);
 }
 
-module.exports = {
+export {
   crc32,
   adler32,
   djb2,
