@@ -4,7 +4,7 @@ import {
   crc32, adler32, djb2, javaHash,
   fnv1a_32, fnv1a_64,
   murmurhash3_32, xxhash32,
-  toHex, combine, hash, listAlgorithms,
+  toHex, combine, hash, listAlgorithms, VERSION,
 } from '../index.js';
 
 // ─── CRC32 ───────────────────────────────────────────────────────
@@ -241,4 +241,14 @@ test('distribution: hashes spread across 32-bit range', () => {
   }
   // At least 900 unique top-16-bits out of 1000 inputs
   assert.ok(buckets.size > 900, `Poor distribution: only ${buckets.size} unique`);
+});
+
+// ─── VERSION constant ────────────────────────────────────────────
+
+test('VERSION: semver format', () => {
+  assert.match(VERSION, /^\d+\.\d+\.\d+$/);
+});
+
+test('VERSION: matches package.json', () => {
+  assert.strictEqual(VERSION, '1.1.0');
 });

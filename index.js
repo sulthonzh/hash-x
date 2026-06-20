@@ -1,5 +1,9 @@
 'use strict';
 
+// ─── VERSION ─────────────────────────────────────────────────────
+
+export const VERSION = '1.1.0';
+
 // ─── Internal helpers ────────────────────────────────────────────
 
 function toBytes(input) {

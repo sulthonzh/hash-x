@@ -9,6 +9,8 @@ import {
   toHex, hash, listAlgorithms,
 } from './index.js';
 
+const VERSION = '1.1.0';
+
 const args = process.argv.slice(2);
 
 function usage() {
@@ -40,6 +42,11 @@ if (args.length === 0 || args[0] === '--help' || args[0] === '-h') {
   process.exit(0);
 }
 
+if (args[0] === '--version' || args[0] === '-V') {
+  console.log(VERSION);
+  process.exit(0);
+}
+
 if (args[0] === '--list') {
   console.log(listAlgorithms().join('\n'));
   process.exit(0);
@@ -67,15 +74,31 @@ let seed = 0;
 let asHex = false;
 let filePath = null;
 
+const knownFlags = new Set(['--seed', '--hex', '--file', '--stdin']);
 for (let i = 1; i < args.length; i++) {
   if (args[i] === '--seed') {
-    seed = parseInt(args[++i], 10) || 0;
+    seed = parseInt(args[++i], 10);
+    if (Number.isNaN(seed)) {
+      console.error(`Invalid seed value: ${args[i]}`);
+      process.exit(2);
+    }
   } else if (args[i] === '--hex') {
     asHex = true;
   } else if (args[i] === '--file') {
     filePath = args[++i];
-  } else if (args[i] && !input) {
+    if (!filePath) {
+      console.error('--file requires a path argument');
+      process.exit(2);
+    }
+  } else if (args[i] === '--stdin') {
+    // explicitly read from stdin
+    input = null;
+  } else if (args[i] && !args[i].startsWith('--') && !input) {
     input = args[i];
+  } else if (args[i] && args[i].startsWith('--')) {
+    console.error(`Unknown flag: ${args[i]}`);
+    console.error(`Available flags: ${[...knownFlags].join(', ')}, --help, --version`);
+    process.exit(2);
   }
 }
 
