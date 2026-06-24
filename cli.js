@@ -9,7 +9,7 @@ import {
   toHex, hash, listAlgorithms,
 } from './index.js';
 
-const VERSION = '1.1.0';
+const VERSION = '1.2.0';
 
 const args = process.argv.slice(2);
 

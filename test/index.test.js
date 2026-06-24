@@ -250,5 +250,5 @@ test('VERSION: semver format', () => {
 });
 
 test('VERSION: matches package.json', () => {
-  assert.strictEqual(VERSION, '1.1.0');
+  assert.strictEqual(VERSION, '1.2.0');
 });
