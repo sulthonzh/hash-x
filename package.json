@@ -9,6 +9,7 @@
   "scripts": {
     "test": "node --test test/index.test.js",
     "test:core": "node --test test/index.test.js",
+    "test:coverage": "c8 --reporter=text node --test test/index.test.js",
     "prepublishOnly": "npm test"
   },
   "keywords": [
@@ -25,7 +26,9 @@
   "license": "MIT",
   "author": "sulthonzh",
   "type": "module",
-  "exports": { ".": "./index.js" },
+  "exports": {
+    ".": "./index.js"
+  },
   "files": [
     "index.js",
     "cli.js",
@@ -37,5 +40,10 @@
     "type": "git",
     "url": "https://github.com/sulthonzh/hash-x.git"
   },
-  "engines": { "node": ">=18" }
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "c8": "^11.0.0"
+  }
 }

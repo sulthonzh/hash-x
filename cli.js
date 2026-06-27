@@ -3,9 +3,6 @@
 
 import { readFileSync } from 'fs';
 import {
-  crc32, adler32, djb2, javaHash,
-  fnv1a_32, fnv1a_64,
-  murmurhash3_32, xxhash32,
   toHex, hash, listAlgorithms,
 } from './index.js';
 
