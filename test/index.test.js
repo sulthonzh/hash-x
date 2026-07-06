@@ -252,3 +252,79 @@ test('VERSION: semver format', () => {
 test('VERSION: matches package.json', () => {
   assert.strictEqual(VERSION, '1.2.0');
 });
+
+// ─── Input type edge cases ───────────────────────────────────────
+
+test('toBytes: Int32Array (ArrayBuffer.isView) works', () => {
+  // Int32Array is ArrayBuffer.isView but not Uint8Array or Buffer
+  const i32 = new Int32Array([0x6c6c6568, 0x6f]); // 'hello' in LE + 'o'
+  // Should not throw, should produce a valid hash
+  const h = crc32(i32);
+  assert.ok(typeof h === 'number');
+  assert.ok(h >= 0 && h <= 0xFFFFFFFF);
+});
+
+test('toBytes: Float32Array (ArrayBuffer.isView) works', () => {
+  const f32 = new Float32Array([1.0, 2.0]);
+  const h = murmurhash3_32(f32);
+  assert.ok(typeof h === 'number');
+  assert.ok(h >= 0 && h <= 0xFFFFFFFF);
+});
+
+test('toBytes: DataView (ArrayBuffer.isView) works', () => {
+  const buf = new ArrayBuffer(4);
+  const dv = new DataView(buf);
+  dv.setUint8(0, 104); // 'h'
+  dv.setUint8(1, 105); // 'i'
+  const h = fnv1a_32(dv);
+  assert.ok(typeof h === 'number');
+});
+
+test('toBytes: invalid input throws TypeError', () => {
+  assert.throws(
+    () => crc32(42),
+    { name: 'TypeError', message: /Expected string, Buffer, or Uint8Array/ }
+  );
+  assert.throws(
+    () => murmurhash3_32(null),
+    { name: 'TypeError' }
+  );
+  assert.throws(
+    () => fnv1a_32(undefined),
+    { name: 'TypeError' }
+  );
+  assert.throws(
+    () => djb2({}),
+    { name: 'TypeError' }
+  );
+});
+
+test('toBytes: subarray of Uint8Array produces correct hash', () => {
+  const full = new Uint8Array([104, 101, 108, 108, 111]); // 'hello'
+  const sub = full.subarray(0, 3); // 'hel'
+  assert.strictEqual(crc32(sub), crc32('hel'));
+});
+
+// ─── combine() edge cases ────────────────────────────────────────
+
+test('combine: zero inputs', () => {
+  assert.strictEqual(combine(0, 0), 0);
+});
+
+test('combine: deterministic', () => {
+  assert.strictEqual(combine(0x12345678, 0xABCDEF01), combine(0x12345678, 0xABCDEF01));
+});
+
+test('combine: different inputs produce different outputs', () => {
+  assert.notStrictEqual(combine(1, 2), combine(2, 1));
+});
+
+// ─── toHex() edge cases ──────────────────────────────────────────
+
+test('toHex: max uint32', () => {
+  assert.strictEqual(toHex(0xFFFFFFFF), 'ffffffff');
+});
+
+test('toHex: max uint64', () => {
+  assert.strictEqual(toHex(0xFFFFFFFFFFFFFFFFn, 64), 'ffffffffffffffff');
+});
