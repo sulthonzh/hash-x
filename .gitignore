@@ -1,3 +1,13 @@
 node_modules/
 coverage/
 *.log
+dist/
+build/
+.env
+.env.*
+__pycache__/
+.venv/
+*.egg-info/
+.mypy_cache/
+*.tgz
+.DS_Store
