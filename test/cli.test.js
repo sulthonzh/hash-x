@@ -125,6 +125,62 @@ test('CLI: --file without path exits with code 2', () => {
   assert.match(err, /requires a path/);
 });
 
+test('CLI: --stdin flag reads from stdin', () => {
+  const out = execFileSync('node', [CLI, 'crc32', '--stdin'], {
+    encoding: 'utf8',
+    input: 'hello',
+  }).trim();
+  // Should match crc32('hello') = 907060870
+  assert.strictEqual(out, '907060870');
+});
+
+test('CLI: no args + piped stdin reads from stdin', () => {
+  // When no string arg and no --file, CLI reads stdin
+  const out = execFileSync('node', [CLI, 'crc32'], {
+    encoding: 'utf8',
+    input: 'hello',
+  }).trim();
+  assert.strictEqual(out, '907060870');
+});
+
+test('CLI: --stdin with --hex outputs hex', () => {
+  const out = execFileSync('node', [CLI, 'crc32', '--stdin', '--hex'], {
+    encoding: 'utf8',
+    input: 'hello',
+  }).trim();
+  // crc32('hello') in hex = 3610a686
+  assert.strictEqual(out, '3610a686');
+});
+
+test('CLI: --stdin with 64-bit algorithm', () => {
+  const out = execFileSync('node', [CLI, 'fnv1a_64', '--stdin'], {
+    encoding: 'utf8',
+    input: 'hello',
+  }).trim();
+  assert.match(out, /^\d+$/);
+});
+
+test('CLI: --stdin with seeded algorithm', () => {
+  const out1 = execFileSync('node', [CLI, 'murmurhash3_32', '--stdin', '--seed', '0'], {
+    encoding: 'utf8',
+    input: 'test',
+  }).trim();
+  const out2 = execFileSync('node', [CLI, 'murmurhash3_32', '--stdin', '--seed', '42'], {
+    encoding: 'utf8',
+    input: 'test',
+  }).trim();
+  assert.notStrictEqual(out1, out2);
+});
+
+test('CLI: --stdin empty input produces valid hash', () => {
+  const out = execFileSync('node', [CLI, 'crc32', '--stdin'], {
+    encoding: 'utf8',
+    input: '',
+  }).trim();
+  // crc32('') = 0
+  assert.strictEqual(out, '0');
+});
+
 // Cleanup
 test('CLI: cleanup temp files', () => {
   rmSync(TMP, { recursive: true, force: true });

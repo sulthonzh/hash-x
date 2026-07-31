@@ -1,6 +1,6 @@
 # hash-x — Exceptional Checklist Audit
 
-**Last audit:** 2026-07-23 (oss-builder re-audit)
+**Last audit:** 2026-08-01 (re-audited from 2026-07-23)
 **Version:** 1.2.0
 **Status:** ✅ EXCEPTIONAL — all 13 criteria met
 
@@ -8,8 +8,8 @@
 
 - [x] **README hooks reader in first 3 lines** — "Fast non-cryptographic hashing in pure JavaScript. 8 algorithms, zero dependencies, 32-bit and 64-bit output."
 - [x] **Quick start works in <2 minutes** — npm install + import, verified functional
-- [x] **All tests GREEN (100% pass rate)** — 50 core tests pass (test:core), 18 CLI integration tests pass (verified manually, issue with test runner hanging prevents automated execution)
-- [x] **Test coverage >= 80% on core logic** — 100% statements, 100% branches, 100% functions, 100% lines across ALL files (index.js + cli.js)
+- [x] **All tests GREEN (100% pass rate)** — 74/74 tests pass (50 core + 24 CLI)
+- [x] **Test coverage >= 80% on core logic** — **100% statements, 100% branches, 100% functions, 100% lines** across ALL files (index.js + cli.js)
 - [x] **Zero TypeScript errors** — Pure JS project (ESM), no TS compilation needed
 - [x] **Zero ESLint warnings** — Clean (eslint.config.js configured)
 - [x] **No TODO/FIXME comments** — Verified via grep across index.js, cli.js, test/
@@ -20,31 +20,27 @@
 - [x] **Performance** — All O(n) linear scans, no nested loops, pre-computed CRC table
 - [x] **Security** — Input validation (TypeError on invalid types), no secrets, seed NaN rejection in CLI
 
-## Re-audit Findings (2026-07-23)
-
-**Gap identified and fixed:** CLI integration tests (18 tests) added on 2026-07-17 via commit ed41add but not included in `package.json` test script. Only core tests (50) were being executed.
-
-**Fix applied:** Updated `package.json`:
-- `test` script now includes both `test/index.test.js` and `test/cli.test.js`
-- `test:coverage` now measures coverage for both test suites
-- `test:core` preserved for backward compatibility
-
-**CLI test status:** 
-- 18 CLI integration tests written and verified manually
-- Issue: Node.js test runner hangs when executing CLI test suite (known ESM + execFileSync interaction)
-- Workaround: Core tests (50) execute successfully; CLI tests verified via manual execution
-
 ## Test Summary
 
 | Metric | Value |
 |--------|-------|
-| Core tests (test:core) | 50/50 pass (100%) |
-| CLI integration tests | 18/18 pass (100%, verified manually) |
-| Total tests | 68/68 pass (100%) |
+| Core tests | 50/50 pass (100%) |
+| CLI integration tests | 24/24 pass (100%) |
+| Total tests | 74/74 pass (100%) |
 | Statements | 100% |
 | Branches | 100% |
 | Functions | 100% |
 | Lines | 100% |
+
+## Coverage Detail
+
+```
+File      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+----------|---------|----------|---------|---------|-------------------
+All files |     100 |      100 |     100 |     100 |                   
+ cli.js   |     100 |      100 |     100 |     100 |                   
+ index.js |     100 |      100 |     100 |     100 |                   
+```
 
 ## Algorithms
 
@@ -58,17 +54,38 @@
 - DJB2
 - Java String.hashCode() (signed)
 
-## CLI Features
+## Re-Audit History
 
-- CLI tool: `hash-x` (binary in package.json)
-- Commands: --help, -h, --version, -V, --list, demo
-- Options: --seed, --hex, --file, --stdin
-- 18 CLI integration tests covering all commands and error cases
+### 2026-08-01 Re-Audit (CLI stdin coverage → 100% all metrics)
 
-## Notes
+**Action:** Re-audited hash-x (STATUS.md 9 days stale from 2026-07-23, cli.js at 92.18% stmts / 95.55% branches with lines 91-92 and 114-121 uncovered — stdin reading paths).
 
-- Pure JavaScript, zero dependencies
-- Supports string, Buffer, Uint8Array, and any ArrayBuffer.isView input
-- CLI tool included (`hash-x`) with --seed, --hex, --file, --stdin, --list, demo modes
-- ESM modules with `type: "module"`
-- Automated test coverage via c8
+**Issue resolved:** Prior audit noted "CLI test runner hangs (known ESM + execFileSync interaction)" preventing 18 CLI tests from running in automated suite. Verified this issue is now resolved — all CLI tests run successfully (~9s execution time). The `test` and `test:coverage` scripts already include both test files.
+
+**New tests:** +6 in `test/cli.test.js` targeting stdin reading paths (lines 91-92 `--stdin` flag handler, lines 114-121 stdin reading loop):
+- `--stdin` flag reads from stdin (pipes 'hello', verifies crc32=907060870 — covers line 90-92 `--stdin` branch + lines 114-121 stdin else branch)
+- No args + piped stdin reads from stdin (no --stdin flag, no input string, no --file → falls to stdin reader — covers lines 114-121)
+- `--stdin` with `--hex` outputs hex (crc32('hello') = 3610a686)
+- `--stdin` with 64-bit algorithm (fnv1a_64 via stdin)
+- `--stdin` with seeded algorithm (murmurhash3_32 with different seeds via stdin)
+- `--stdin` empty input produces valid hash (crc32('') = 0)
+
+**Coverage:** cli.js 92.18%→**100%** stmts, 95.55%→**100%** branches. Overall: **100% all metrics across all files** ✅.
+
+**Tests:** 68 → **74** (+6), all GREEN ✅.
+
+### 2026-07-23 Re-Audit (CLI test script fix)
+
+**Gap identified and fixed:** CLI integration tests (18 tests) added on 2026-07-17 via commit ed41add but not included in `package.json` test script. Only core tests (50) were being executed.
+
+**Fix applied:** Updated `package.json`:
+- `test` script now includes both `test/index.test.js` and `test/cli.test.js`
+- `test:coverage` now measures coverage for both test suites
+- `test:core` preserved for backward compatibility
+
+**Note:** CLI tests were known to hang due to ESM + execFileSync interaction. Verified in 2026-08-01 re-audit that this issue is resolved (likely Node.js version fix). All 24 CLI tests now run in ~9 seconds.
+
+### 2026-07-17 Initial Audit
+
+- 50 core tests, 100% coverage on index.js
+- 18 CLI integration tests added (commit ed41add)
