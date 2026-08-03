@@ -1,6 +1,6 @@
 # hash-x — Exceptional Checklist Audit
 
-**Last audit:** 2026-08-01 (re-audited from 2026-07-23)
+**Last audit:** 2026-08-04 (fixed test concurrency hang, re-verified from 2026-08-01)
 **Version:** 1.2.0
 **Status:** ✅ EXCEPTIONAL — all 13 criteria met
 
@@ -84,6 +84,16 @@ All files |     100 |      100 |     100 |     100 |
 - `test:core` preserved for backward compatibility
 
 **Note:** CLI tests were known to hang due to ESM + execFileSync interaction. Verified in 2026-08-01 re-audit that this issue is resolved (likely Node.js version fix). All 24 CLI tests now run in ~9 seconds.
+
+### 2026-08-04 Fix: Test Concurrency Hang
+
+**Action:** Fixed hash-x CLI test hang on Node v22+ — same `execFileSync` spawn exhaustion pattern as bloom-filter and csv-quick.
+
+**Root cause:** Node v22+ default test concurrency exhausts file descriptor pool when CLI tests spawn child processes in parallel via `execFileSync`.
+
+**Fix:** Added `--test-concurrency=1` to `test`, `test:core`, and `test:coverage` scripts in package.json.
+
+**Tests:** 74/74 GREEN ✅ (50 core + 24 CLI).
 
 ### 2026-07-17 Initial Audit
 
