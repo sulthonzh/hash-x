@@ -1,6 +1,6 @@
 # hash-x — Exceptional Checklist Audit
 
-**Last audit:** 2026-08-04 (fixed test concurrency hang, re-verified from 2026-08-01)
+**Last audit:** 2026-08-06 (re-verified; prior: 2026-08-04)
 **Version:** 1.2.0
 **Status:** ✅ EXCEPTIONAL — all 13 criteria met
 
