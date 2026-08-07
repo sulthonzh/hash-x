@@ -1,6 +1,6 @@
 # hash-x — Exceptional Checklist Audit
 
-**Last audit:** 2026-08-06 (re-verified; prior: 2026-08-04)
+**Last audit:** 2026-08-07 (re-verified; prior: 2026-08-06)
 **Version:** 1.2.0
 **Status:** ✅ EXCEPTIONAL — all 13 criteria met
 
